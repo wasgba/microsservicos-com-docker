@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Serviço para o aplicativo PHP
+  app:
+    image: php:7.4-apache
+    container_name: supermercado-app
+    environment:
+      DB_HOST: supermercado-db
+      DB_USER: wasgba
+      DB_PASSWORD: senha123
+      DB_NAME: supermercado
+    volumes:
+      - ./app:/var/www/html  # Mapear a pasta 'app' do host para o contêiner
+    ports:
+      - "8080:80"  # Mapeamento da porta 80 do contêiner para a porta 80 do host
+    networks:
+      - supermercado-net
+    depends_on:
+      - db  # O serviço de app depende do banco de dados
+
+  # Serviço para o banco de dados MySQL
+  db:
+    image: mysql:5.7
+    container_name: supermercado-db
+    environment:
+      MYSQL_ROOT_PASSWORD: senha123
+      MYSQL_DATABASE: supermercado
+      MYSQL_USER: wasgba
+      MYSQL_PASSWORD: senha123
+    volumes:
+      - ./supermecado-docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql  # Script para inicializar o banco de dados
+    networks:
+      - supermercado-net
+
+# Redes para os serviços
+networks:
+  supermercado-net:
+    driver: bridge
+
